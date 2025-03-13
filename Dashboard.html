@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""/>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+        <title>Unfall-Dashboard</title>
+        <link rel="stylesheet" type="text/css" href="styles.css" media="screen">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+        <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
+</head>
+<body>
+    
+    <!--Main Leaflet Map Object-->
+    <div id="map"></div>
+    <!--Sidebar for Searching, Filtering etc-->
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="Suche nach Ort...">
+    </div>
+    <div id="toggle-filter">&#x1F50D;</div>
+    <div id="filters">
+        <!-- UKATEGORIE Dropdown -->
+        <label for="ukategorie">Unfall Kategorie:</label>
+        <select id="ukategorie">
+            <option value="all">All</option>
+            <option value="1">Unfall mit Getoeteten</option>
+            <option value="2">Unfall mit Schwerverletzten</option>
+            <option value="3">Unfall mit Leichtverletzten</option>
+        </select>
+    
+        <div id="vehicle-types">
+            <span>Beteiligten am Unfall:</span>
+            <label><input type="checkbox" id="allVehicles" checked>Kein Filter</label>
+            <label><input type="checkbox" class="vehicle-type" id="IstRad">Rad</label>
+            <label><input type="checkbox" class="vehicle-type" id="IstPKW">PKW</label>
+            <label><input type="checkbox" class="vehicle-type" id="IstFuss">Fussgaenger</label>
+            <label><input type="checkbox" class="vehicle-type" id="IstKrad">Kraftrad</label>
+            <label><input type="checkbox" class="vehicle-type" id="IstGkfz">GKFZ</label>
+            <label><input type="checkbox" class="vehicle-type" id="IstSonstige">Sonstigen</label>
+        </div>
+    
+        <!-- Date Selector -->
+        <label for="date-selector">Datum:</label>
+        <input type="month" id="date-selector">
+    
+        <!-- Unfallart Dropdown -->
+        <label for="unfallart">Unfallart:</label>
+        <select id="unfallart">
+            <option value="all">All</option>
+            <option value="1">Zusammenstoss mit anfahrendem/anhaltendem/ruhendem Fahrzeug</option>
+            <option value="2">Zusammenstoss mit vorausfahrendem / wartendem Fahrzeug</option>
+            <option value="3">Zusammenstoss mit seitlich in gleicher Richtung fahrendem Fahrzeug</option>
+            <option value="4">Zusammenstoss mit entgegenkommendem Fahrzeug</option>
+            <option value="5">Zusammenstoss mit einbiegendem / kreuzendem Fahrzeug</option>
+            <option value="6">Zusammenstoss zwischen Fahrzeug und Fussgaenger</option>
+            <option value="7">Aufprall auf Fahrbahnhindernis</option>
+            <option value="8">Abkommen von Fahrbahn nach rechts</option>
+            <option value="9">Abkommen von Fahrbahn nach links</option>
+            <option value="0">Unfall anderer Art</option>
+        </select>
+
+        <button id="apply-filters">Apply Filters</button>
+    </div>
+    
+    <!--Sections for Displaying the Diagrams-->
+    <div id="toggleDiagramSelect"><i class="material-icons" style="font-size:46px;color:rgb(53, 198, 255)" >satellite</i></div>
+    <div id="containerDiagramSelect" class="diagramselector">
+        <h2>W&auml;hle die Kriterien f&uuml;r dein Diagramm:</h2><br>
+        <label for="selectYear">W&auml;hle das Jahr:</label>
+        <select id="selectYear">
+            <option value="WHERE UJAHR = 2016 ">2016</option>
+            <option value="WHERE UJAHR = 2017 ">2017</option>
+            <option value="WHERE UJAHR = 2018 ">2018</option>
+            <option value="WHERE UJAHR = 2019 ">2019</option>
+            <option value="WHERE UJAHR = 2020 ">2020</option>
+            <option value="WHERE UJAHR = 2021 ">2021</option>
+            <option value="WHERE UJAHR = 2022 ">2022</option>
+        </select><br>
+        <label for="selectMonth">W&auml;hle den Monat:</label>
+        <select id="selectMonth">
+            <option value="">None</option>
+            <option value="AND UMONAT = 1 ">Januar</option>
+            <option value="AND UMONAT = 2 ">Februar</option>
+            <option value="AND UMONAT = 3 ">M&auml;rz</option>
+            <option value="AND UMONAT = 4 ">April</option>
+            <option value="AND UMONAT = 5 ">Mai</option>
+            <option value="AND UMONAT = 6 ">Juni</option>
+            <option value="AND UMONAT = 7 ">Juli</option>
+            <option value="AND UMONAT = 8 ">August</option>
+            <option value="AND UMONAT = 9 ">September</option>
+            <option value="AND UMONAT = 10 ">Okotber</option>
+            <option value="AND UMONAT = 11 ">November</option>
+            <option value="AND UMONAT = 12 ">Dezember</option>            
+        </select><br>
+        <label for="selectDay">W&auml;hle den Tag:</label>
+        <select id="selectDay">
+            <option value="">None</option>
+            <option value="AND UWOCHENTAG = 2 " >Montag</option>
+            <option value="AND UWOCHENTAG = 3 " >Dienstag</option>
+            <option value="AND UWOCHENTAG = 4 " >Mittwoch</option>
+            <option value="AND UWOCHENTAG = 5 " >Donnerstag</option>
+            <option value="AND UWOCHENTAG = 6 " >Freitag</option>
+            <option value="AND UWOCHENTAG = 7 " >Samstag</option>
+            <option value="AND UWOCHENTAG = 1 " >Sonntag</option>
+        </select><br>
+        <label for="selectCategory">W&auml;hle die Kategorie:</label>
+        <select id="selectCategory">
+            <option value="">None</option>
+            <option value="AND UKATEGORIE = 1 " >Unfall mit Get&ouml;teten</option>
+            <option value="AND UKATEGORIE = 2 " >Unfall mit Schwerverletzten</option>
+            <option value="AND UKATEGORIE = 3 " >Unfall mit Leichtverletzten</option>
+        </select><br>
+        <label for="selectArt">W&auml;hle die Art:</label>
+        <select id="selectArt">
+            <option value="">None</option>
+            <option value="AND UART = 1 ">Zusammensto&szlig; mit anfahrendem/anhaltendem/ruhendem Fahrzeug</option>
+            <option value="AND UART = 2 ">Zusammensto&szlig; mit vorausfahrendem / wartendem Fahrzeug</option>
+            <option value="AND UART = 3 ">Zusammensto&szlig; mit seitlich in gleicher Richtung fahrendem Fahrzeug</option>
+            <option value="AND UART = 4 ">Zusammensto&szlig; mit entgegenkommendem Fahrzeug</option>
+            <option value="AND UART = 5 ">Zusammensto&szlig; mit einbiegendem / kreuzendem Fahrzeug</option>
+            <option value="AND UART = 6 ">Zusammensto&szlig; zwischen Fahrzeug und Fu&szlig;g&auml;nger</option>
+            <option value="AND UART = 7 ">Aufprall auf Fahrbahnhindernis</option>
+            <option value="AND UART = 8 ">Abkommen von Fahrbahn nach rechts</option>
+            <option value="AND UART = 9 ">Abkommen von Fahrbahn nach links</option>
+            <option value="AND UART = 0 ">Unfall anderer Art</option>
+        </select><br>
+        <label for="selectType">W&auml;hle den Typ:</label>
+        <select id="selectType">
+            <option value="">None</option>
+            <option value="AND UTYP = 1 ">Fahrunfall</option>
+            <option value="AND UTYP = 2 ">Abbiegeunfall</option>
+            <option value="AND UTYP = 3 ">Einbiegen / Kreuzen-Unfall</option>
+            <option value="AND UTYP = 4 ">&Uuml;berschreiten-Unfall</option>
+            <option value="AND UTYP = 5 ">UNfall durch ruhenden Verkehr</option>
+            <option value="AND UTYP = 6 ">Unfall im L&auml;ngsverkehr</option>
+            <option value="AND UTYP = 7 ">sonstiger Unfall</option>
+        </select><br>
+        <label for="selectLight">W&auml;hle die Lichtverh&auml;ltnisse</label>
+        <select id="selectLight">
+            <option value="">None</option>
+            <option value="AND ULICHTVERH = 0 ">Tageslicht</option>
+            <option value="AND ULICHTVERH = 1 ">D&auml;mmerung</option>
+            <option value="AND ULICHTVERH = 2 ">Dunkelheit</option>
+        </select><br>
+        <label for="selectCondition">W&auml;hle den Stra&szlig;enzustand</label>
+        <select id="selectCondition">
+            <option value="">None</option>
+            <option value="AND USTRZUSTAND = 0 ">trocken</option>
+            <option value="AND USTRZUSTAND = 1 ">nass/feucht/schl&uuml;pfrig</option>
+            <option value="AND USTRZUSTAND = 2 ">winterglatt</option>
+        </select><br>
+        <label for="selectPedestrian">Passanten beteiligt: </label>
+        <select id="selectPedestrian">
+            <option value="">None</option>
+            <option value="AND IstFuss = 0 ">Unfall ohne Fu&szlig;g&auml;ngerbeteiligung</option>
+            <option value="AND IstFuss = 1 ">Unfall mit Fu&szlig;g&auml;ngerbeteiligung</option>
+        </select><br>
+        <label for="selectTruck">G&uuml;terkraftfahrzeuge beteiligt:</label>
+        <select id="selectTruck">
+            <option value="">None</option>
+            <option value="AND IstGkfz = 0 " >Unfall ohne G&uuml;terkraftfahrzeugbeteiligung</option>
+            <option value="AND IstGkfz = 1 " >Unfall mit G&uuml;terkraftfahrzeugbeteiligung</option>
+        </select><br>
+        <label for="selectBike">Fahrr&auml;der beteiligt:</label>
+        <select id="selectBike">
+            <option value="">None</option>
+            <option value="AND IstRad = 0 ">Unfall ohne Fahrradbeteiligung</option>
+            <option value="AND IstRad = 1 ">Unfall mit Fahrradbeteiligung</option>
+        </select><br>
+        <label for="selectMotorcycle">Motorr&auml;der beteiligt</label>
+        <select id="selectMotorcycle">
+            <option value="">None</option>
+            <option value="AND IstKrad = 0 ">Unfall ohne Kraftradbeteiligung</option>
+            <option value="AND IstKrad = 1 ">Unfall mit Kraftradbeteiligung</option>
+        </select><br>
+        <label for="selectCar">PKWs beteiligt:</label>
+        <select id="selectCar">
+            <option value="">None</option>
+            <option value="AND IstPKW = 0 ">Unfall ohne PKW-Beteiligung</option>
+            <option value="AND IstPKW = 1 ">Unfall mit PKW-Beteiligung</option>
+        </select><br>
+        <label for="selectElse">Sonstige beteiligt:</label>
+        <select id="selectElse">
+            <option value="">None</option>
+            <option value="AND IstSonstige = 0 ">Unfall ohne Beteiligung eines oben nicht genannten Verkehrsmittels</option>
+            <option value="AND IstSonstige = 1 ">Unfall mit Beteiligung eines oben nicht genannten Verkehrsmittels</option>
+        </select><br>
+        <button id="fetchChartData">Diagramm erstellen</button>
+                
+    </div>
+    <div id="containerCanvas"><canvas id="barChart"></canvas></div>
+    
+    
+    
+    
+    
+    <script>
+        var map = L.map('map').setView([49.992863, 8.247253], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        //Functions for expanding and collapsing left Sidebar 
+        var searchContainer = document.getElementById('search-container');
+        var toggleFilter = document.getElementById('toggle-filter');
+
+        toggleFilter.addEventListener('click', function() {
+            searchContainer.classList.toggle('open');
+        });   
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const allVehiclesCheckbox = document.getElementById('allVehicles');
+            const vehicleCheckboxes = document.querySelectorAll('#vehicle-types input[type="checkbox"]:not(#allVehicles)');
+
+            allVehiclesCheckbox.addEventListener('change', function() {
+                if(this.checked) {
+                    vehicleCheckboxes.forEach(cb => cb.checked = false);
+                }
+            });
+
+            vehicleCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if(this.checked) {
+                        allVehiclesCheckbox.checked = false;
+                    }
+                });
+            });
+        });
+           
+        
+
+        
+        var diagramBox = document.getElementById('containerDiagramSelect');
+        var toggleDiagramBox = document.getElementById('toggleDiagramSelect');
+        var toggleDiagram = document.getElementById('containerCanvas');
+        toggleDiagramBox.addEventListener('click', function() {
+            diagramBox.classList.toggle('open');
+            toggleDiagramBox.classList.toggle('open');
+            toggleDiagram.classList.toggle('open');
+        });
+    </script>    
+    <script src="markerfunctions.js"></script>
+    <script src="mapfunctions.js"></script>  
+    <script src="chartfunctions.js"></script>
+    
+</body>

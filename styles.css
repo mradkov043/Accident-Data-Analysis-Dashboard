@@ -1,0 +1,185 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+#map {
+    height: 100%;
+    z-index: 1;
+}
+#search-container {
+    width: 0;
+    height: 7%;
+    box-sizing: border-box;    
+    background-color: rgba(0, 0, 0, 0.82);
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 0.3s;
+    z-index: 2;
+}
+#search-container.open {
+    width: 25%;
+}
+#search-input {
+    margin: 10px;
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+#toggle-filter {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    height: 60px;
+    width: 55px;
+    text-align: center;
+    font-size: 46px;
+    z-index: 3;    
+}
+
+
+
+.diagramselector label{
+    flex: 1;    
+    margin-left: 50px;
+}
+.diagramselector button{
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #4CAF50; 
+    color: white; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer; 
+    margin-left: 50px;
+    margin-bottom: 20px;  
+}
+
+.diagramselector select{ 
+    
+    flex: 1;   
+    margin-left: 30px;
+    width: 150px;
+    margin-bottom: 20px;   
+}
+.diagramselector h2{
+    text-align: center;
+    color: white;
+    padding: 30px;
+}
+#containerDiagramSelect{
+    width: 100%;
+    height: 0px;
+    box-sizing: border-box;      
+    overflow-y: auto;
+    position: absolute;
+    bottom: 0;    
+    transition: height 0.75s;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.90);
+    color: white;
+    border-radius: 10px; 
+}
+#toggleDiagramSelect{
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    cursor: pointer;
+    height: 47px;
+    width: 50px;
+    text-align: center;
+    font-size: 25px;    
+    z-index: 3;
+    border-radius: 10px;
+    color: white;
+    transition-duration: 0.75s;
+    background-image: linear-gradient(to right, rgb(20, 20, 20), black, rgb(20, 20, 20));
+}
+#toggleDiagramSelect.open{
+    bottom: 92%;
+}
+#containerDiagramSelect.open{
+    height: 90%;
+    z-index: 4;
+}
+
+#containerCanvas{
+    width: 70%;
+    height: 0px;
+    box-sizing: border-box;      
+    overflow-y: auto;
+    position: absolute;
+    bottom: 60px;
+    right: 60px;    
+    transition: height 0.75s;
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: white;
+    border-radius: 10px;      
+}
+#containerCanvas.open{
+    height: 70%;
+    z-index: 4;
+}
+
+#filters {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 250px;
+    z-index: 2;
+}
+
+#filters select, #filters input[type="month"] {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#vehicle-types {
+    margin-bottom: 10px;
+}
+
+#vehicle-types label {
+    display: block;
+    margin: 5px 0;
+}
+
+#vehicle-types input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+#filters button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#filters button:hover {
+    background-color: #45a049;
+}
+
+@media (max-width: 600px) {
+    #filters {
+        width: 90%;
+        left: 5%;
+        top: 5%;
+    }
+}
